@@ -7,9 +7,19 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/oversudo/gofetch/helpers"
+	"github.com/oversudo/gofetch/logo"
 )
 
 var (
+
+	// Layout
+	leftStyle = lipgloss.NewStyle().
+        Width(50).
+        Padding(1, 2)
+	
+	rightStyle = lipgloss.NewStyle().
+        Padding(1, 2)
+
 	// Color scheme
 	accentColor    = lipgloss.Color("#00D9FF")
 	secondaryColor = lipgloss.Color("#FF6AC1")
@@ -40,17 +50,6 @@ var (
 			Bold(true)
 )
 
-// ASCII art for different OSes
-var asciiArt = []string{
-	"        ___       ",
-	"       (.. |      ",
-	"       (<> |      ",
-	"      / __  \\     ",
-	"     ( /  \\ /|    ",
-	"    _/\\ __)/_)    ",
-	"    \\/-____\\/     ",
-}
-
 func Render() {
 	user := helpers.GetUsername()
 	host := helpers.GetHostname()
@@ -67,9 +66,14 @@ func Render() {
 	}
 	infoLines = append(infoLines, renderInfoLine("Shell: ", helpers.GetShellInfo()))
 
-	for _, value := range infoLines {
-		fmt.Printf("%s\n", value)
-	}
+	leftContent := logo.DEFAULT
+	rightContent := strings.Join(infoLines, "\n")
+
+	left := leftStyle.Render(leftContent)
+	right := rightStyle.Render(rightContent)
+
+	ui := lipgloss.JoinHorizontal(lipgloss.Top, left, right)
+    fmt.Println(ui)
 }
 
 func renderInfoLine(label, value string) string {
