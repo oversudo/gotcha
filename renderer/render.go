@@ -2,6 +2,7 @@ package renderer
 
 import (
 	"fmt"
+	"runtime"
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
@@ -19,8 +20,7 @@ var (
 	// Styles
 	titleStyle = lipgloss.NewStyle().
 			Foreground(accentColor).
-			Bold(true).
-			MarginBottom(1)
+			Bold(true)
 
 	labelStyle = lipgloss.NewStyle().
 			Foreground(labelColor).
@@ -59,11 +59,14 @@ func Render() {
 	infoLines := []string{
 		userHost,
 		separator,
-		renderInfoLine("OS: ", helpers.GetOSInfo()),
-		renderInfoLine("Uptime: ", helpers.GetUptime()),
-		renderInfoLine("Kernel: ", helpers.GetKernelVersion()),
-		renderInfoLine("Shell: ", helpers.GetShellInfo()),
 	}
+	infoLines = append(infoLines, renderInfoLine("OS: ", helpers.GetOSInfo()))
+	infoLines = append(infoLines, renderInfoLine("Uptime: ", helpers.GetUptime()))
+	if runtime.GOOS != "windows" {
+		infoLines = append(infoLines, renderInfoLine("Kernel: ", helpers.GetKernelVersion()))
+	}
+	infoLines = append(infoLines, renderInfoLine("Shell: ", helpers.GetShellInfo()))
+
 	for _, value := range infoLines {
 		fmt.Printf("%s\n", value)
 	}

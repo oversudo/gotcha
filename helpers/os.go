@@ -1,3 +1,5 @@
+//go:build !windows
+
 package helpers
 
 import (
@@ -5,6 +7,7 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+
 	"golang.org/x/sys/unix"
 )
 
