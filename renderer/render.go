@@ -62,6 +62,7 @@ func Render() {
 		renderInfoLine("OS: ", helpers.GetOSInfo()),
 		renderInfoLine("Uptime: ", helpers.GetUptime()),
 		renderInfoLine("Kernel: ", helpers.GetKernelVersion()),
+		renderInfoLine("Shell: ", helpers.GetShellInfo()),
 	}
 	for _, value := range infoLines {
 		fmt.Printf("%s\n", value)
