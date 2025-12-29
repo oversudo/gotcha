@@ -14,11 +14,11 @@ var (
 
 	// Layout
 	leftStyle = lipgloss.NewStyle().
-        Width(50).
-        Padding(1, 2)
-	
+			Width(50).
+			Padding(1, 2)
+
 	rightStyle = lipgloss.NewStyle().
-        Padding(1, 2)
+			Padding(1, 2)
 
 	// Color scheme
 	accentColor    = lipgloss.Color("#00D9FF")
@@ -63,6 +63,11 @@ func Render() {
 	infoLines = append(infoLines, renderInfoLine("Uptime: ", helpers.GetUptime()))
 	if runtime.GOOS != "windows" {
 		infoLines = append(infoLines, renderInfoLine("Kernel: ", helpers.GetKernelVersion()))
+		var packagesString []string
+		for pkg, count := range helpers.NumberOfPackages() {
+			packagesString = append(packagesString, fmt.Sprintf("%d (%s)", count, pkg))
+		}
+		infoLines = append(infoLines, renderInfoLine("Packages: ", strings.Join(packagesString, ", ")))
 	}
 	infoLines = append(infoLines, renderInfoLine("Shell: ", helpers.GetShellInfo()))
 
@@ -73,7 +78,7 @@ func Render() {
 	right := rightStyle.Render(rightContent)
 
 	ui := lipgloss.JoinHorizontal(lipgloss.Top, left, right)
-    fmt.Println(ui)
+	fmt.Println(ui)
 }
 
 func renderInfoLine(label, value string) string {
