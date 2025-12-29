@@ -28,8 +28,23 @@ func getShellVersion() string {
 		return ""
 	}
 
-	if out, err := exec.Command(shell, "--version").Output(); err == nil {
-		return strings.TrimSpace(string(out))
+	switch shell {
+		case "bash":
+			cmd := exec.Command("bash", "-c", "bash --version | head -1 | cut -d ' ' -f 4-")
+			output, err := cmd.Output()
+			if err != nil {
+				return ""
+			}
+			return fmt.Sprintf("bash %s",strings.TrimSpace(string(output)))
+		default:
+			if out, err := exec.Command(shell, "--version").Output(); err == nil {
+				if strings.HasPrefix(string(out),shell){
+					return strings.TrimSpace(string(out))
+				} else {
+					return fmt.Sprintf("%s %s", shell, strings.TrimSpace(string(out)))
+				}
+			}
 	}
+
 	return ""
 }

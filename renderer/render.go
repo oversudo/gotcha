@@ -72,7 +72,7 @@ func Render() {
 	infoLines = append(infoLines, renderInfoLine("Shell: ", helpers.GetShellInfo()))
 	infoLines = append(infoLines, renderInfoLine("Public IP: ", helpers.GetExternalIP()))
 	infoLines = append(infoLines, renderInfoLine("Private IPs: ", strings.Join(helpers.GetLocalIPs(),", ")))
-
+	infoLines = append(infoLines, renderInfoLine("CPU: ", helpers.GetCPUInfo()))
 	leftContent := logo.DEFAULT
 	rightContent := strings.Join(infoLines, "\n")
 
