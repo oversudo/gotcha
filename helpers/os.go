@@ -22,8 +22,9 @@ func GetKernelVersion() string {
 	if err := unix.Uname(&utsname); err != nil {
 		return ""
 	}
+	sysname := string(utsname.Sysname[:])
 	release := string(utsname.Release[:])
-	return release
+	return fmt.Sprintf("%s %s", sysname, release)
 }
 
 func getOSName() string {
