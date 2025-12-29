@@ -10,17 +10,24 @@ func NumberOfPackages() map[string]int {
 	var cmd *exec.Cmd
 
 	if commandExists("dpkg") {
-		cmd = exec.Command("sh", "-c", "dpkg -l | grep '^ii' | wc -l")
-	} else if commandExists("rpm") {
+		cmd = exec.Command("sh", "-c", "dpkg -l | grep '^ii'")
+		result["dpkg"] = linesToCount(cmd)
+	}
+	if commandExists("rpm") {
 		cmd = exec.Command("rpm", "-qa")
-	} else if commandExists("pacman") {
+		result["rpm"] = linesToCount(cmd)
+	}
+	if commandExists("pacman") {
 		cmd = exec.Command("pacman", "-Q")
-	} else if commandExists("brew") {
+		result["pacman"] = linesToCount(cmd)
+	}
+	if commandExists("brew") {
 		cmd = exec.Command("brew", "list", "--formula")
 		result["brew"] = linesToCount(cmd)
 		cmd = exec.Command("brew", "list", "--cask")
 		result["brew-cask"] = linesToCount(cmd)
 	}
+
 	return result
 }
 
