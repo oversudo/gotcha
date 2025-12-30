@@ -7,7 +7,6 @@ import (
 )
 
 type Display struct {
-	Name        string
 	Resolution  string
 	RefreshRate float64
 	Primary     bool
@@ -35,9 +34,8 @@ func getXrandrDisplays() []Display {
 			}
 
 			display := Display{
-				Name:    fields[0],
-				Primary: strings.Contains(line, "primary"),
-                Resolution: re.FindString(line),
+				Primary:    strings.Contains(line, "primary"),
+				Resolution: re.FindString(line),
 			}
 
 			displays = append(displays, display)

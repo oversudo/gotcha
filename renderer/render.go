@@ -21,11 +21,10 @@ var (
 			Padding(1, 2)
 
 	// Color scheme
-	accentColor    = lipgloss.Color("#00D9FF")
-	secondaryColor = lipgloss.Color("#FF6AC1")
-	labelColor     = lipgloss.Color("#7AA2F7")
-	textColor      = lipgloss.Color("#C0CAF5")
-	mutedColor     = lipgloss.Color("#565F89")
+	accentColor = lipgloss.Color("#00D9FF")
+	labelColor  = lipgloss.Color("#7AA2F7")
+	textColor   = lipgloss.Color("#C0CAF5")
+	mutedColor  = lipgloss.Color("#565F89")
 
 	// Styles
 	titleStyle = lipgloss.NewStyle().
@@ -41,13 +40,6 @@ var (
 
 	separatorStyle = lipgloss.NewStyle().
 			Foreground(mutedColor)
-
-	asciiStyle = lipgloss.NewStyle().
-			Foreground(secondaryColor).
-			Bold(true)
-
-	colorBarStyle = lipgloss.NewStyle().
-			Bold(true)
 )
 
 func Render() {
@@ -74,15 +66,15 @@ func Render() {
 	infoLines = append(infoLines, renderInfoLine("Private IPs", strings.Join(helpers.GetLocalIPs(), ", ")))
 	infoLines = append(infoLines, renderInfoLine("CPU", helpers.GetCPUInfo()))
 	infoLines = append(infoLines, renderInfoLine("GPU", helpers.GetGPUInfo()))
-
+	var resolutions []string
 	for _, display := range helpers.GetDisplays() {
 		if display.Primary {
-			infoLines = append(infoLines, renderInfoLine(fmt.Sprintf("%s (Primary)", display.Name), display.Resolution))
+			resolutions = append(resolutions, fmt.Sprintf("%s (Primary)", display.Resolution))
 		} else {
-			infoLines = append(infoLines, renderInfoLine(display.Name, display.Resolution))
+			resolutions = append(resolutions, fmt.Sprintf("%s", display.Resolution))
 		}
-
 	}
+	infoLines = append(infoLines, renderInfoLine("Resolution", strings.Join(resolutions, ", ")))
 	leftContent := logo.DEFAULT
 	rightContent := strings.Join(infoLines, "\n")
 
