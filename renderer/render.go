@@ -59,21 +59,30 @@ func Render() {
 		userHost,
 		separator,
 	}
-	infoLines = append(infoLines, renderInfoLine("OS: ", helpers.GetOSInfo()))
-	infoLines = append(infoLines, renderInfoLine("Uptime: ", helpers.GetUptime()))
+	infoLines = append(infoLines, renderInfoLine("OS", helpers.GetOSInfo()))
+	infoLines = append(infoLines, renderInfoLine("Uptime", helpers.GetUptime()))
 	if runtime.GOOS != "windows" {
-		infoLines = append(infoLines, renderInfoLine("Kernel: ", helpers.GetKernelVersion()))
+		infoLines = append(infoLines, renderInfoLine("Kernel", helpers.GetKernelVersion()))
 		var packagesString []string
 		for pkg, count := range helpers.NumberOfPackages() {
 			packagesString = append(packagesString, fmt.Sprintf("%d (%s)", count, pkg))
 		}
-		infoLines = append(infoLines, renderInfoLine("Packages: ", strings.Join(packagesString, ", ")))
+		infoLines = append(infoLines, renderInfoLine("Packages", strings.Join(packagesString, ", ")))
 	}
-	infoLines = append(infoLines, renderInfoLine("Shell: ", helpers.GetShellInfo()))
-	infoLines = append(infoLines, renderInfoLine("Public IP: ", helpers.GetExternalIP()))
-	infoLines = append(infoLines, renderInfoLine("Private IPs: ", strings.Join(helpers.GetLocalIPs(),", ")))
-	infoLines = append(infoLines, renderInfoLine("CPU: ", helpers.GetCPUInfo()))
-	infoLines = append(infoLines, renderInfoLine("GPU: ", helpers.GetGPUInfo()))
+	infoLines = append(infoLines, renderInfoLine("Shell", helpers.GetShellInfo()))
+	infoLines = append(infoLines, renderInfoLine("Public IP", helpers.GetExternalIP()))
+	infoLines = append(infoLines, renderInfoLine("Private IPs", strings.Join(helpers.GetLocalIPs(), ", ")))
+	infoLines = append(infoLines, renderInfoLine("CPU", helpers.GetCPUInfo()))
+	infoLines = append(infoLines, renderInfoLine("GPU", helpers.GetGPUInfo()))
+
+	for _, display := range helpers.GetDisplays() {
+		if display.Primary {
+			infoLines = append(infoLines, renderInfoLine(fmt.Sprintf("%s (Primary)", display.Name), display.Resolution))
+		} else {
+			infoLines = append(infoLines, renderInfoLine(display.Name, display.Resolution))
+		}
+
+	}
 	leftContent := logo.DEFAULT
 	rightContent := strings.Join(infoLines, "\n")
 
@@ -85,6 +94,6 @@ func Render() {
 }
 
 func renderInfoLine(label, value string) string {
-	sep := separatorStyle.Render(" ")
+	sep := separatorStyle.Render(": ")
 	return labelStyle.Render(label) + sep + valueStyle.Render(value)
 }
