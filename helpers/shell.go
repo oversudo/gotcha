@@ -10,7 +10,7 @@ import (
 )
 
 func GetShellInfo() string {
-	return fmt.Sprintf("%s", getShellVersion())
+	return getShellVersion()
 }
 
 func getShell() (string, error) {

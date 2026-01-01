@@ -24,7 +24,9 @@ func GetExternalIP() string {
 	if err != nil {
 		return ""
 	}
-	defer resp.Body.Close()
+	if resp.Body == nil {
+		return ""
+	}
 
 	if resp.StatusCode != http.StatusOK {
 		return ""
@@ -39,7 +41,10 @@ func GetExternalIP() string {
 	if err := json.Unmarshal(body, &data); err != nil {
 		return ""
 	}
-
+	err = resp.Body.Close()
+	if err != nil {
+		return ""
+	}
 	return fmt.Sprintf("%s (%s,%s)", data.IP, data.City, data.Country)
 }
 

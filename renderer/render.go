@@ -125,7 +125,7 @@ func Render() {
 			if display.Primary {
 				resolutions = append(resolutions, fmt.Sprintf("%s (Primary)", display.Resolution))
 			} else {
-				resolutions = append(resolutions, fmt.Sprintf("%s", display.Resolution))
+				resolutions = append(resolutions, display.Resolution)
 			}
 		}
 		outputCh <- Line{Key: "Resolution", Value: strings.Join(resolutions, ", ")}

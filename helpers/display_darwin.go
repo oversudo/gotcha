@@ -60,7 +60,8 @@ func getDisplayInfo(displayID C.CGDirectDisplayID) DisplayCGO {
 	}
 
 	mode := C.CGDisplayCopyDisplayMode(displayID)
-	if unsafe.Pointer(mode) != nil {
+
+	if unsafe.Pointer(mode) != nil { //nolint:govet
 		defer C.CGDisplayModeRelease(mode)
 		display.Width = uint32(C.CGDisplayModeGetWidth(mode))
 		display.Height = uint32(C.CGDisplayModeGetHeight(mode))
