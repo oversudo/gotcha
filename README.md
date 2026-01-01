@@ -22,6 +22,13 @@ The information shown includes:
 go install github.com/oversudo/gotcha/cmd/gotcha@latest
 ```
 
+## Similar Projects
+
+- [fastfetch](https://github.com/fastfetch-cli/fastfetch)
+- [screenfetch](https://github.com/KittyKatt/screenFetch)
+- [neofetch](https://github.com/dylanaraps/neofetch) - Archived
+
+
 ## Contributing
 
 If you want to contribute, feel free to open issues or pull requests
