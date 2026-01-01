@@ -66,14 +66,17 @@ func GetCPUInfo() string {
 	info, err := cpu.Info()
 	physicalCores, _ := cpu.Counts(false)
 	logicalCores, _ := cpu.Counts(true)
-
 	if err != nil {
 		fmt.Printf("Error getting CPU info: %v\n", err)
 		return ""
 	}
+	modelName := info[0].ModelName
+	if modelName == "Undefined" {
+		modelName = info[0].VendorID
+	}
 
 	if len(info) > 0 {
-		return fmt.Sprintf("%s (%d Cores) (%d Threads)", info[0].ModelName, physicalCores, logicalCores)
+		return fmt.Sprintf("%s (%d Cores) (%d Threads)", modelName, physicalCores, logicalCores)
 	}
 
 	return ""
