@@ -4,45 +4,33 @@ import (
 	"fmt"
 	"runtime"
 	"strings"
+	"sync"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/oversudo/gofetch/helpers"
 	"github.com/oversudo/gofetch/logo"
 )
 
-var (
-
-	// Layout
-	leftStyle = lipgloss.NewStyle().
-		Width(50).
-		Padding(1, 2)
-
-	rightStyle = lipgloss.NewStyle().
-		Padding(1, 2)
-
-	// Color scheme
-	accentColor = lipgloss.Color("#00D9FF")
-	labelColor  = lipgloss.Color("#7AA2F7")
-	textColor   = lipgloss.Color("#C0CAF5")
-	mutedColor  = lipgloss.Color("#565F89")
-
-	// Styles
-	titleStyle = lipgloss.NewStyle().
-		Foreground(accentColor).
-		Bold(true)
-
-	labelStyle = lipgloss.NewStyle().
-		Foreground(labelColor).
-		Bold(true)
-
-	valueStyle = lipgloss.NewStyle().
-		Foreground(textColor)
-
-	separatorStyle = lipgloss.NewStyle().
-		Foreground(mutedColor)
-)
+type Line struct {
+	Key   string
+	Value string
+}
 
 func Render() {
+	fieldOrder := []string{
+		"OS",
+		"Uptime",
+		"Kernel",   // Skip on Windows
+		"Packages", // Skip on Windows
+		"Shell",
+		"Public IP",
+		"Private IPs",
+		"CPU",
+		"GPU",
+		"Memory",
+		"Resolution",
+	}
+
 	user := helpers.GetUsername()
 	host := helpers.GetHostname()
 	userHost := titleStyle.Render(fmt.Sprintf("%s@%s", user, host))
@@ -51,33 +39,109 @@ func Render() {
 		userHost,
 		separator,
 	}
-	infoLines = append(infoLines, renderInfoLine("OS", helpers.GetOSInfo()))
-	infoLines = append(infoLines, renderInfoLine("Uptime", helpers.GetUptime()))
+
+	outputCh := make(chan Line)
+	var wg sync.WaitGroup
+
+	go func() {
+		wg.Wait() // Blocks until wg counter = 0
+		close(outputCh)
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		outputCh <- Line{Key: "OS", Value: helpers.GetOSInfo()}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		outputCh <- Line{Key: "Uptime", Value: helpers.GetUptime()}
+	}()
+
 	if runtime.GOOS != "windows" {
-		infoLines = append(infoLines, renderInfoLine("Kernel", helpers.GetKernelVersion()))
-		var packagesString []string
-		for pkg, count := range helpers.NumberOfPackages() {
-			packagesString = append(packagesString, fmt.Sprintf("%d (%s)", count, pkg))
-		}
-		infoLines = append(infoLines, renderInfoLine("Packages", strings.Join(packagesString, ", ")))
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			outputCh <- Line{Key: "Kernel", Value: helpers.GetKernelVersion()}
+		}()
+
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			var packagesString []string
+			for pkg, count := range helpers.NumberOfPackages() {
+				packagesString = append(packagesString, fmt.Sprintf("%d (%s)", count, pkg))
+			}
+			outputCh <- Line{Key: "Packages", Value: strings.Join(packagesString, ", ")}
+		}()
+
 	}
-	infoLines = append(infoLines, renderInfoLine("Shell", helpers.GetShellInfo()))
-	infoLines = append(infoLines, renderInfoLine("Public IP", helpers.GetExternalIP()))
-	infoLines = append(infoLines, renderInfoLine("Private IPs", strings.Join(helpers.GetLocalIPs(), ", ")))
-	infoLines = append(infoLines, renderInfoLine("CPU", helpers.GetCPUInfo()))
-	infoLines = append(infoLines, renderInfoLine("GPU", helpers.GetGPUInfo()))
-	memory := helpers.GetMemory()
-	infoLines = append(infoLines, renderInfoLine("Memory", fmt.Sprintf("%d / %d MB (%.2f%%)",
-		memory.Used/1024/1024, memory.Total/1024/1024, memory.UsedPercent)))
-	var resolutions []string
-	for _, display := range helpers.GetDisplays() {
-		if display.Primary {
-			resolutions = append(resolutions, fmt.Sprintf("%s (Primary)", display.Resolution))
-		} else {
-			resolutions = append(resolutions, fmt.Sprintf("%s", display.Resolution))
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		outputCh <- Line{Key: "Shell", Value: helpers.GetShellInfo()}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		outputCh <- Line{Key: "Public IP", Value: helpers.GetExternalIP()}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		outputCh <- Line{Key: "Private IPs", Value: strings.Join(helpers.GetLocalIPs(), ", ")}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		outputCh <- Line{Key: "CPU", Value: helpers.GetCPUInfo()}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		outputCh <- Line{Key: "GPU", Value: helpers.GetGPUInfo()}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		memory := helpers.GetMemory()
+		outputCh <- Line{Key: "Memory", Value: fmt.Sprintf("%d / %d MB (%.2f%%)",
+			memory.Used/1024/1024, memory.Total/1024/1024, memory.UsedPercent)}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		var resolutions []string
+		for _, display := range helpers.GetDisplays() {
+			if display.Primary {
+				resolutions = append(resolutions, fmt.Sprintf("%s (Primary)", display.Resolution))
+			} else {
+				resolutions = append(resolutions, fmt.Sprintf("%s", display.Resolution))
+			}
+		}
+		outputCh <- Line{Key: "Resolution", Value: strings.Join(resolutions, ", ")}
+	}()
+
+	results := make(map[string]string)
+	for line := range outputCh {
+		results[line.Key] = line.Value
+	}
+
+	for _, field := range fieldOrder {
+		if value, ok := results[field]; ok {
+			infoLines = append(infoLines, renderInfoLine(field, value))
 		}
 	}
-	infoLines = append(infoLines, renderInfoLine("Resolution", strings.Join(resolutions, ", ")))
+
 	leftContent := logo.DEFAULT
 	rightContent := strings.Join(infoLines, "\n")
 
@@ -86,9 +150,4 @@ func Render() {
 
 	ui := lipgloss.JoinHorizontal(lipgloss.Top, left, right)
 	fmt.Println(ui)
-}
-
-func renderInfoLine(label, value string) string {
-	sep := separatorStyle.Render(": ")
-	return labelStyle.Render(label) + sep + valueStyle.Render(value)
 }
