@@ -1,6 +1,6 @@
 # gotcha
 
-A fast system information tool written in Go. Shows your system specs in a clean format with an OS-specific logo.
+A fast system information tool written in Go. Shows your system specs in a clean format with an OS-specific logo. Inspired by neoftech, fastfetch
 
 ## What it does
 
