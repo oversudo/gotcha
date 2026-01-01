@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/http"
 	"net"
+	"net/http"
 )
 
 type IPInfoResponse struct {
@@ -20,15 +20,15 @@ type IPInfoResponse struct {
 }
 
 func GetExternalIP() string {
-    resp, err := http.Get("https://ipinfo.io/json")
+	resp, err := http.Get("https://ipinfo.io/json")
 	if err != nil {
 		return ""
 	}
 	defer resp.Body.Close()
 
-	 if resp.StatusCode != http.StatusOK {
-        return ""
-    }
+	if resp.StatusCode != http.StatusOK {
+		return ""
+	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -43,31 +43,30 @@ func GetExternalIP() string {
 	return fmt.Sprintf("%s (%s,%s)", data.IP, data.City, data.Country)
 }
 
-
 func GetLocalIPs() []string {
-	 var adapters []string
+	var adapters []string
 
 	interfaces, err := net.Interfaces()
 	if err != nil {
-        return adapters
-    }
+		return adapters
+	}
 
-	 for _, iface := range interfaces {
+	for _, iface := range interfaces {
 		if iface.Flags&net.FlagLoopback != 0 {
-            continue
-        }
+			continue
+		}
 		addrs, err := iface.Addrs()
-        if err != nil {
-            continue
-        }
+		if err != nil {
+			continue
+		}
 
 		for _, addr := range addrs {
-            if ipNet, ok := addr.(*net.IPNet); ok && ipNet.IP.To4() != nil {
-                adapters = append(adapters, fmt.Sprintf("%s (%s)",ipNet.IP.String(), iface.Name))
-            }
-        }
+			if ipNet, ok := addr.(*net.IPNet); ok && ipNet.IP.To4() != nil {
+				adapters = append(adapters, fmt.Sprintf("%s (%s)", ipNet.IP.String(), iface.Name))
+			}
+		}
 
 	}
 
-    return adapters
+	return adapters
 }
