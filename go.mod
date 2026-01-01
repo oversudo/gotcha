@@ -1,4 +1,4 @@
-module github.com/oversudo/gofetch
+module github.com/oversudo/gotcha
 
 go 1.25.0
 

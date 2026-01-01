@@ -7,8 +7,8 @@ import (
 	"sync"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/oversudo/gofetch/helpers"
-	"github.com/oversudo/gofetch/logo"
+	"github.com/oversudo/gotcha/helpers"
+	"github.com/oversudo/gotcha/logo"
 )
 
 type Line struct {
@@ -142,7 +142,7 @@ func Render() {
 		}
 	}
 
-	leftContent := logo.DEFAULT
+	leftContent := logo.GetLogo()
 	rightContent := strings.Join(infoLines, "\n")
 
 	left := leftStyle.Render(leftContent)
