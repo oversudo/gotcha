@@ -19,7 +19,7 @@ The information shown includes:
 ## Installation
 
 ```bash
-go install github.com/oversudo/gotcha@lates
+go install github.com/oversudo/gotcha@latest
 ```
 
 ## License
