@@ -1,3 +1,9 @@
+[![Go Version](https://img.shields.io/badge/v1.24.0-grey?style=for-the-badge&logo=go)](https://go.dev/)
+[![License](https://img.shields.io/github/license/oversudo/gotcha?style=for-the-badge)](LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/github.com/oversudo/gotcha?style=for-the-badge)](https://goreportcard.com/report/github.com/oversudo/gotcha)
+[![Release](https://img.shields.io/github/v/release/oversudo/gotcha?style=for-the-badge)](https://github.com/oversudo/gotcha/releases)
+[![Stars](https://img.shields.io/github/stars/oversudo/gotcha?style=for-the-badge)](https://github.com/oversudo/gotcha/stargazers)
+
 ![DEMO](README.png)
 # gotcha
 
